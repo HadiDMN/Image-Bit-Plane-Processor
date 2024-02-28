@@ -1,15 +1,33 @@
-# 8-Bit Layer Image Processor v:1.0
+# Image Bit Plane Processor
 
 ## Overview
 
-The 8-Bit Layer Image Processor is a graphical user interface (GUI) application developed by Hadi DaMaN. This program allows users to perform image processing operations, specifically dealing with 8-bit image layers and adding logos to images.
+The Image Bit Plane Processor is a Python-based graphical user interface (GUI) application designed to process and manipulate images in an 8-bit layer format. Developed by Hadi Daman, this tool allows users to perform various image processing tasks, such as decomposing images into bit planes, adding logos to images, and combining processed layers into a final composite image.
+
+## Main Purpose
+
+The main purpose of the Image Bit Plane Processor is to provide a user-friendly interface for performing intricate operations on images. The software primarily focuses on three key functionalities:
+
+### 1. Decompose Image to Bit Planes
+
+The application can decompose an input image into its 8-bit binary representation by splitting it into individual bit planes. Each bit plane represents a specific bit (0 to 7) of the pixel values, allowing users to analyze and manipulate the image at different levels of granularity.
+
+### 2. Add Logo to First Layer
+
+Users can add a logo to the first bit plane of the image. The software allows the selection of a logo image, which is then resized to match the dimensions of the loaded image. The logo is added to the first layer, providing a way to watermark or customize the original image.
+
+### 3. Combine Planes to Final Image
+
+The processed bit planes, whether modified or not, can be combined to generate a final composite image. This image represents the culmination of the processing steps, showcasing the effects of adding a logo or other manipulations to the original image.
 
 ## Features
 
-- **Select Image:** Load an image from your computer for processing.
-- **Add Logo to First Layer:** Add a logo to the first layer of the image.
-- **Process and Save Images:** Combine image layers, add logos, and save the processed images.
-- **About Me:** Learn more about the developer, Hadi DaMaN.
+- **User-friendly Interface:** Intuitive GUI for easy interaction.
+- **Image Loading:** Load images in various formats (PNG, JPG, JPEG, BMP).
+- **Bit Plane Decomposition:** Break down images into 8-bit binary planes.
+- **Logo Addition:** Add a logo to the first bit plane of the image.
+- **Image Combination:** Combine processed bit planes into a final composite image.
+- **Interactive Notifications:** Informative pop-up messages for user guidance.
 
 ## Getting Started
 
@@ -25,7 +43,7 @@ The 8-Bit Layer Image Processor is a graphical user interface (GUI) application 
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/yourusername/8-bit-layer-image-processor.git
+    git clone https://github.com/yourusername/image-bit-plane-processor.git
     ```
 
 2. Install the required dependencies:
@@ -42,17 +60,23 @@ The 8-Bit Layer Image Processor is a graphical user interface (GUI) application 
     python main.py
     ```
 
-2. The GUI window will appear. Follow the on-screen instructions for image processing.
+2. Follow the on-screen instructions to perform image processing tasks.
 
 ## Screenshots
 
-
+(Include screenshots showcasing the application's interface and image processing results.)
 
 ## Contributing
 
-Contributions are welcome! If you find any issues or have suggestions for improvements, please create an issue or submit a pull request.
+Contributions are welcome! If you encounter issues or have suggestions for improvements, please create an issue or submit a pull request.
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## About the Developer
+
+- **Hadi Daman**
+  - Website: [imhadi.ir](https://imhadi.ir)
+
+Enjoy processing your images with the Image Bit Plane Processor!
