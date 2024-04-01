@@ -1,12 +1,13 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QFileDialog, QLabel, QMessageBox
+from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QPushButton,
+                             QFileDialog, QLabel, QMessageBox, QComboBox)
 from PyQt5.QtGui import QPalette, QColor
 from PIL import Image
 
 # Image Processing Functions
 def decompose_image_to_bit_planes(image):
-    # Convert to grayscale and decompose to bit planes
+    """Converts image to grayscale and decomposes into 8 bit planes."""
     image = image.convert('L')
     pixels = image.load()
     width, height = image.size
@@ -19,27 +20,36 @@ def decompose_image_to_bit_planes(image):
                 plane_pixels[k][i, j] = (pixel_value >> k) & 1
     return planes
 
-def add_logo_to_layer(layer, logo_path, target_size):
+def add_logo_to_layer(layer, logo_path, target_size, alpha=0.5):
+    """Adds a resized logo to the specified bit plane with alpha blending."""
     logo = Image.open(logo_path)
-    logo = logo.convert('1')
-    
-    # Resize the logo to match the target size
+    logo = logo.convert('L')
     logo = logo.resize(target_size)
-    layer.paste(logo, (0, 0), logo)
+
+    # Create a mask with alpha values for blending
+    mask = Image.new('L', target_size)
+    mask_pixels = mask.load()
+    logo_pixels = logo.load()
+    for i in range(target_size[0]):
+        for j in range(target_size[1]):
+            mask_pixels[i, j] = int(logo_pixels[i, j] * alpha)
+
+    layer.paste(logo, (0, 0), mask=mask)
     return layer
 
 def combine_planes_to_image(planes):
+    """Combines bit planes back into a single grayscale image."""
     combined_image = Image.new('L', planes[0].size)
     combined_pixels = combined_image.load()
     for k in range(8):
         plane_pixels = planes[k].load()
         for i in range(combined_image.width):
             for j in range(combined_image.height):
-                combined_pixels[i, j] |= (plane_pixels[i, j] << k
-)
+                combined_pixels[i, j] |= (plane_pixels[i, j] << k)
     return combined_image
 
 def open_image(image_path):
+    """Opens the image using platform-specific commands."""
     if sys.platform == "win32":
         os.startfile(image_path)
     else:
@@ -54,7 +64,7 @@ class ImageProcessor(QWidget):
         self.image = None
         self.logo_path = None
         self.planes = []
-
+        
     def init_ui(self):
         # Set dark theme palette
         dark_palette = QPalette()
@@ -72,15 +82,23 @@ class ImageProcessor(QWidget):
         self.setPalette(dark_palette)
         
         # Set Default Size
-        self.resize(800, 600)
+        self.resize(1280, 720)
         self.layout = QVBoxLayout()
         
-        self.titleLabel = QLabel('8-Bit Layer Image Processor V:1.0')
+        self.titleLabel = QLabel('8-Bit Layer Image Processor V:1.0     Developed by: Hadi DaMaN')
         self.layout.addWidget(self.titleLabel)
+        self.planeComboBox = QComboBox()
+        self.planeComboBox.addItems([' Plane 1', 'Plane 2', 'Plane 3', 'Plane 4', 'Plane 5', 'Plane 6', 'Plane 7', 'Plane 8'])
+        
+        # Apply dark palette to the combo box
+        self.planeComboBox.setStyleSheet("QComboBox { background-color: rgb(25, 25, 25); color: rgb(255, 255, 255); }"
+                                         "QComboBox::drop-down { background-color: rgb(25, 25, 25); color: rgb(255, 255, 255); }")  
+        
+        self.layout.addWidget(self.planeComboBox)
         self.selectImageButton = QPushButton('Select Image')
         self.selectImageButton.clicked.connect(self.select_image)
         self.layout.addWidget(self.selectImageButton)
-        self.addLogoButton = QPushButton('Add Logo to First Layer')
+        self.addLogoButton = QPushButton('Add Logo to Selected Layer')
         self.addLogoButton.clicked.connect(self.add_logo)
         self.layout.addWidget(self.addLogoButton)
         self.processButton = QPushButton('Process and Save Images')
@@ -94,7 +112,6 @@ class ImageProcessor(QWidget):
 
         self.setLayout(self.layout)
         self.setWindowTitle('Image Bit Plane Processor')
-
     def select_image(self):
         image_path, _ = QFileDialog.getOpenFileName(self, 'Select Image', '', 'Image files (*.png *.jpg *.jpeg *.bmp)')
         if image_path:
@@ -111,8 +128,17 @@ class ImageProcessor(QWidget):
             
             # Resize the logo to match the size of the loaded image
             target_size = (self.image.width, self.image.height)
-            self.planes = decompose_image_to_bit_planes(self.image)
-            self.planes[0] = add_logo_to_layer(self.planes[0], self.logo_path, target_size)
+            if not self.planes:
+                self.planes = decompose_image_to_bit_planes(self.image)
+
+            # Get the selected plane index
+            selected_plane_index = self.planeComboBox.currentIndex()
+
+            # Clear the selected plane
+            self.planes[selected_plane_index] = Image.new('1', (self.image.width, self.image.height))  
+            
+            # Add the logo to the selected plane
+            self.planes[selected_plane_index] = add_logo_to_layer(self.planes[selected_plane_index], self.logo_path, target_size)
 
     def process_images(self):
         if self.image is None:
@@ -142,7 +168,7 @@ class ImageProcessor(QWidget):
         open_image(combined_planes_image_path)
         open_image(combined_logo_planes_image_path)
         open_image(final_image_path)
-        QMessageBox.information(self, 'Process Complete', 'Images have been processed and saved. Developed By: Hadi Daman')
+        QMessageBox.information(self, 'Process Complete', 'Images have been processed and saved.')
 
     def show_about_me(self):
         about_me_url = "https://imhadi.ir"
@@ -156,3 +182,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# Developed By: MohammadHadi Daman
